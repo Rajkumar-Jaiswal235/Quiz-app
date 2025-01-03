@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>World Lung Day Quiz</title>
+    <style>
+      /* General Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f0f8ff;
+        color: #333;
+      }
+
+      /* Quiz Container Styles */
+      .quiz-container {
+        width: 90%;
+        max-width: 800px;
+        min-height: 400px;
+        margin: 50px auto;
+        background-color: violet;
+        border: 2px solid #161717;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        padding: 20px;
+        color: white;
+      }
+
+      /* Header Styles */
+      .header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+        color: #333;
+        text-align: center;
+        margin-left: 280px;
+        padding-top: 10px;
+      }
+
+      .question-number span {
+        display: inline-block;
+        background-color: #ddd;
+        color: #555;
+        border-radius: 50%;
+        padding: 5px 10px;
+        margin: 0 3px;
+        cursor: pointer;
+      }
+
+      .question-number .current {
+        background-color: #7048e8;
+        color: white;
+      }
+
+      /* Question and Options Styles */
+      .question p {
+        font-size: 1.8rem;
+        margin: 20px 0;
+      }
+
+      .options {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .options button {
+        width: 180px;
+        padding: 10px 15px;
+        font-size: 1rem;
+        border: 2px solid black;
+        border-radius: 8px;
+        background-color: #62eb30;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .options button:hover {
+        background-color: #7048e8;
+        color: white;
+      }
+
+      /* Custom Dialog Styles */
+      .custom-dialog {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 400px;
+        background-color: #e0f7ff;
+        border-radius: 15px;
+        padding: 20px;
+        z-index: 1001;
+        border: 3px solid #6b4c9a;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .dialog-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      }
+
+      .result-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        font-size: 24px;
+        color: white;
+      }
+
+      .correct .result-icon {
+        background-color: #4CAF50;
+      }
+
+      .incorrect .result-icon {
+        background-color: #F44336;
+      }
+
+      .result-text {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .explanation {
+        padding: 15px;
+        margin: 15px 0;
+        border-top: 2px solid #ddd;
+        border-bottom: 2px solid #ddd;
+        text-align: left;
+        line-height: 1.5;
+      }
+
+      .dialog-button {
+        display: block;
+        width: 150px;
+        margin: 20px auto 0;
+        padding: 10px 20px;
+        background-color: #6b4c9a;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+
+      .dialog-button:hover {
+        background-color: #563c7c;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Quiz Structure -->
+    <div class="header">
+      <h1>WORLD LUNG DAY <span>💗</span> QUIZ</h1>
+      <div class="question-number">
+        <span class="current">1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+        <span>6</span>
+        <span>7</span>
+      </div>
+    </div>
+
+    <div class="quiz-container">
+      <div class="question">
+        <br><br><br><br><br>
+        <p id="question-text"></p>
+      </div>
+    </div>
+
+    <div class="options">
+      <button onclick="checkAnswer(this)"></button>
+      <button onclick="checkAnswer(this)"></button>
+      <button onclick="checkAnswer(this)"></button>
+      <button onclick="checkAnswer(this)"></button>
+    </div>
+
+    <!-- Custom Dialog -->
+    <div class="dialog-overlay">
+      <div class="custom-dialog">
+        <div class="result-icon">✓</div>
+        <div class="result-text">Correct!</div>
+        <div class="explanation"></div>
+        <button class="dialog-button" onclick="closeDialog()">CONTINUE</button>
+      </div>
+    </div>
+
+    <script>
+      // Quiz questions array (keeping your existing questions)
+      const questions = [
+  {
+    question: "According to the World Health Organisation, which of these is the most significant risk to respiratory health?",
+    options: ["Global Warming", "Air Pollution", "Torrential Rain", "Urbanisation"],
+    correct: 1,
+    explanation: "According to the World Health Organisation (WHO), air pollution is the greatest environmental risk to respiratory health globally. It causes approximately 7 million premature deaths annually, with 4.2 million of these deaths specifically attributed to ambient (outdoor) air pollution. Air pollution affects both urban and rural populations, and exposure."
+  },
+  {
+    question: "Which disease is most commonly linked to smoking?",
+    options: ["Asthma", "Lung Cancer", "Pneumonia", "Bronchitis"],
+    correct: 1,
+    explanation: "Lung cancer has the strongest association with smoking, with approximately 80-90% of lung cancer cases directly attributed to tobacco use. Smoking damages the cells that line the lungs, and over time, this damage can lead to the development of cancer. The risk of developing lung cancer is particularly high in long-term smokers, with studies showing that people who smoke are 15 to 30 times more likely to develop lung cancer than non-smokers."
+  },
+  {
+    question: "What is a major environmental factor that contributes to lung disease?",
+    options: ["High Humidity", "Air Pollution", "Excessive Sunlight", "Heavy Rainfall"],
+    correct: 1,
+    explanation: "Air pollution is the major environmental factor contributing to lung disease. It contains various harmful components including particulate matter (PM2.5 and PM10), nitrogen dioxide, sulfur dioxide, and ozone, which can penetrate deep into the respiratory system. These pollutants can cause inflammation, oxidative stress, and cellular damage in the lungs, leading to both acute and chronic respiratory conditions."
+  },
+  {
+    question: "Which of the following is a common symptom of respiratory distress?",
+    options: ["Headache", "Shortness of breath", "Nausea", "Rashes"],
+    correct: 1,
+    explanation: "Shortness of breath (dyspnea) is the primary and most characteristic symptom of respiratory distress. It occurs when the body struggles to get enough oxygen or remove enough carbon dioxide, triggering the brain's respiratory center to increase breathing rate and effort. This sensation of breathlessness is a critical warning sign that requires immediate attention."
+  },
+  {
+    question: "Which group is most at risk for respiratory diseases?",
+    options: ["Teenagers", "Elderly people", "Children", "Athletes"],
+    correct: 1,
+    explanation: "Elderly people are generally at the highest risk for respiratory diseases due to several factors. As we age, our lung function naturally declines, with reduced elastic recoil of the lungs, weakened respiratory muscles, and decreased chest wall compliance. Additionally, older adults often have weakened immune systems, making them more susceptible to respiratory infections. They are also more likely to have multiple chronic conditions that can complicate respiratory issues."
+  },
+  {
+    question: "Which type of air pollution is most harmful to respiratory health?",
+    options: ["Carbon Monoxide", "Ozone", "Sulfur Dioxide", "Particulate Matter"],
+    correct: 3,
+    explanation: "Particulate Matter (PM), especially fine particles known as PM2.5 (particles smaller than 2.5 micrometers), is considered the most harmful type of air pollution for respiratory health. These microscopic particles can penetrate deep into the lungs and even enter the bloodstream, causing both immediate and long-term damage. PM2.5 can trigger inflammation, oxidative stress, and DNA damage in lung tissue."
+  },
+  {
+    question: "What is the best way to reduce the risk of lung diseases?",
+    options: ["Quit smoking", "Drink plenty of water", "Exercise regularly", "Sleep 8 hours a day"],
+    correct: 0,
+    explanation: "Quitting smoking is the single most effective way to reduce the risk of lung diseases. Tobacco smoke contains over 7,000 chemicals, many of which are toxic and can damage lung tissue. When a person quits smoking, their lung function begins to improve almost immediately. Within just 12 hours of quitting, carbon monoxide levels in the blood return to normal."
+  }
+];
+
+      let currentQuestionIndex = 0;
+
+      // Initialize the quiz
+      function loadQuestion() {
+        const question = questions[currentQuestionIndex];
+        document.getElementById('question-text').textContent = question.question;
+        
+        const buttons = document.querySelectorAll('.options button');
+        buttons.forEach((button, index) => {
+          button.textContent = question.options[index];
+          button.style.backgroundColor = '#62eb30';
+          button.disabled = false;
+        });
+
+        // Update question number indicator
+        document.querySelectorAll('.question-number span').forEach((span, index) => {
+          span.classList.toggle('current', index === currentQuestionIndex);
+        });
+      }
+
+      // Check answer and show dialog
+      function checkAnswer(button) {
+        const question = questions[currentQuestionIndex];
+        const isCorrect = button.textContent === question.options[question.correct];
+        
+        // Update dialog content
+        const dialog = document.querySelector('.custom-dialog');
+        const resultIcon = dialog.querySelector('.result-icon');
+        const resultText = dialog.querySelector('.result-text');
+        const explanation = dialog.querySelector('.explanation');
+
+        if (isCorrect) {
+          resultIcon.innerHTML = '✓';
+          resultText.textContent = 'Correct!';
+          dialog.classList.add('correct');
+          dialog.classList.remove('incorrect');
+        } else {
+          resultIcon.innerHTML = '✗';
+          resultText.textContent = 'Incorrect';
+          dialog.classList.add('incorrect');
+          dialog.classList.remove('correct');
+        }
+
+        explanation.textContent = question.explanation;
+
+        // Show dialog
+        document.querySelector('.dialog-overlay').style.display = 'block';
+        dialog.style.display = 'block';
+
+        // Disable buttons
+        const buttons = document.querySelectorAll('.options button');
+        buttons.forEach(btn => btn.disabled = true);
+      }
+
+      // Close dialog and move to next question
+      function closeDialog() {
+        document.querySelector('.dialog-overlay').style.display = 'none';
+        document.querySelector('.custom-dialog').style.display = 'none';
+        
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+          loadQuestion();
+        } else {
+          alert('Quiz completed!');
+        }
+      }
+
+      // Start the quiz
+      loadQuestion();
+    </script>
+  </body>
+</html>
